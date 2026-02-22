@@ -7,6 +7,7 @@ export type WindowState = {
     isMinimized: boolean
     isMaximized: boolean
     zIndex: number
+    inBackground?: boolean
 }
 
 export type WindowStore = {
@@ -15,6 +16,7 @@ export type WindowStore = {
     addWindow: (appId: string, title: string) => void;
     removeWindow: (id: string) => void;
     updateWindow: (id: string, updates: Partial<WindowState>) => void;
+    setBackgroundApp: (id: string, inBackground: boolean) => void;
     focusWindow: (id: string) => void;
     minimizeWindow: (id: string) => void;
     maximizeWindow: (id: string) => void;

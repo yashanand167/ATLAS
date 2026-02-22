@@ -1,4 +1,4 @@
-import {create} from "zustand";
+import { create } from "zustand";
 import { Theme, ThemeStore } from "../types/Theme.type";
 
 export const useTheme = create<ThemeStore>((set) => ({
