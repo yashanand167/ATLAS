@@ -1,5 +1,3 @@
-import { create } from "zustand";
-
 export type WindowState = {
     id: string;
     appId: string;
