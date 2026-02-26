@@ -14,7 +14,6 @@ export type WindowStore = {
     windows: WindowState[];
     topZIndex: number;
     addWindow: (appId: string, title: string) => void;
-    removeWindow: (id: string) => void;
     updateWindow: (id: string, updates: Partial<WindowState>) => void;
     setBackgroundApp: (id: string, inBackground: boolean) => void;
     focusWindow: (id: string) => void;

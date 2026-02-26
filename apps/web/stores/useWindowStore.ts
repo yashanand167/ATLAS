@@ -10,11 +10,6 @@ export const useWindowStore = create<WindowStore>((set) => ({
             topZIndex: state.topZIndex + 1
         }))
     },
-    removeWindow: (id: string) => {
-        set((state) => ({
-            windows: state.windows.filter((window) => window.id !== id)
-        }))
-    },
     updateWindow: (id: string, updates: Partial<WindowState>) => {
         set((state) => ({
             windows: state.windows.map((window) => window.id === id ? { ...window, ...updates } : window)

@@ -1,6 +1,7 @@
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+import { Taskbar } from "../components/Windows/Taskbar";
+import { WeatherView } from "../components/mini-interfaces/WeatherView";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -20,9 +21,10 @@ const ThemeImage = (props: Props) => {
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main>
-        <p>Hello World</p>
+    <div className="w-screen h-screen overflow-hidden relative">
+      <main className="w-full h-full">
+        <WeatherView />
+        <Taskbar />
       </main>
     </div>
   );

@@ -1,0 +1,6 @@
+{
+  "name": "@atlas/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "files": ["index.css"]
+}
