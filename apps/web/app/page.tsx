@@ -1,7 +1,10 @@
+'use client'
+
 import Image, { type ImageProps } from "next/image";
 import { Button } from "@repo/ui/button";
 import { Taskbar } from "../components/Windows/Taskbar";
 import { WeatherView } from "../components/mini-interfaces/WeatherView";
+import { useWallpapers } from "../stores/useWallpapers";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -20,10 +23,13 @@ const ThemeImage = (props: Props) => {
 };
 
 export default function Home() {
+
+  const { wallpaper } = useWallpapers();
+
   return (
     <div
-      className="w-screen h-screen overflow-hidden relative bg-cover bg-center"
-      style={{ backgroundImage: "url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2564')" }}
+      className="w-screen h-screen overflow-hidden relative bg-cover bg-center aspect-auto"
+      style={{ backgroundImage: `url('${wallpaper?.src}')` }}
     >
       <main className="w-full h-full bg-black/20">
         <div className="pt-2">
