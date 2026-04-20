@@ -5,10 +5,13 @@ export const useWindowStore = create<WindowStore>((set) => ({
     windows: [],
     topZIndex: 1000,
     addWindow: (appId: string, title: string) => {
-        set((state) => ({
-            windows: [...state.windows, { id: Date.now().toString(), appId, title, position: { x: 100, y: 100 }, size: { width: 400, height: 300 }, isMinimized: false, isMaximized: false, zIndex: state.topZIndex + 1, inBackground: false }],
-            topZIndex: state.topZIndex + 1
-        }))
+        set((state) => {
+            if (state.windows.some(w => w.appId === appId)) return state;
+            return {
+                windows: [...state.windows, { id: appId, appId, title, position: { x: 100, y: 100 }, size: { width: 400, height: 300 }, isMinimized: false, isMaximized: false, zIndex: state.topZIndex + 1, inBackground: true }],
+                topZIndex: state.topZIndex + 1
+            };
+        })
     },
     updateWindow: (id: string, updates: Partial<WindowState>) => {
         set((state) => ({
