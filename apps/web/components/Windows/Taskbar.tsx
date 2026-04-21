@@ -1,7 +1,6 @@
 'use client'
 
-import { Settings } from "@deemlol/next-icons";
-import { Heart } from "@deemlol/next-icons";
+import { Settings, Heart } from "lucide-react";
 import { Notes } from "../customs/Notes";
 import { Music } from "../customs/Music";
 import { useWindowStore } from "../../stores/useWindowStore";
@@ -44,6 +43,10 @@ export const Taskbar = () => {
 
     const handleSettingsWindowBehaviour = () => {
 
+    }
+
+    const handleWeatherWindowBehaviour = () => {
+        
     }
 
     return (

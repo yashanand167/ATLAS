@@ -2,7 +2,7 @@
 import { motion, useDragControls, AnimatePresence } from 'motion/react'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useWindowStore } from '../../../stores/useWindowStore'
-import { Maximize, Minimize } from '@deemlol/next-icons'
+import { Maximize, Minimize } from 'lucide-react'
 
 const MIN_WIDTH = 320
 const MIN_HEIGHT = 240

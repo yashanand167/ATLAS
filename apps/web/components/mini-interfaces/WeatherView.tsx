@@ -1,9 +1,14 @@
-import { Moon } from "@deemlol/next-icons";
-import { Sun } from "@deemlol/next-icons";
+import { Moon, Sun } from "lucide-react";
+import { useWindowStore } from "../../stores/useWindowStore";
 
 export const WeatherView = () => {
+  const addWindow = useWindowStore((state) => state.addWindow);
+
   return (
-    <div className="p-5 flex flex-col justify-between rounded-[2rem] w-56 min-h-[14rem]  ml-5 border border-blue-200/50 bg-gradient-to-br from-sky-400 to-blue-700 text-white shadow-xl">
+    <div 
+      onClick={() => addWindow('weather', 'Weather')}
+      className="p-5 flex flex-col justify-between rounded-[2rem] w-56 min-h-[14rem]  ml-5 border border-blue-200/50 bg-gradient-to-br from-sky-400 to-blue-700 text-white shadow-xl cursor-pointer hover:scale-105 transition-transform"
+    >
       <div className="flex flex-col">
         <h1 className="text-xl font-medium tracking-wide">New Delhi</h1>
         <h2 className="text-5xl font-light mt-1">25°</h2>

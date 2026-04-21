@@ -5,6 +5,9 @@ import { Button } from "@repo/ui/button";
 import { Taskbar } from "../components/Windows/Taskbar";
 import { WeatherView } from "../components/mini-interfaces/WeatherView";
 import { useWallpapers } from "../stores/useWallpapers";
+import { useWindowStore } from "../stores/useWindowStore";
+import { Weather } from "../components/Windows/Apps/WeatherApplication";
+import { AnimatePresence } from "motion/react";
 
 type Props = Omit<ImageProps, "src"> & {
   srcLight: string;
@@ -25,6 +28,8 @@ const ThemeImage = (props: Props) => {
 export default function Home() {
 
   const { wallpaper } = useWallpapers();
+  const windows = useWindowStore((state) => state.windows);
+  const isWeatherOpen = windows.some(w => w.appId === 'weather');
 
   return (
     <div
@@ -35,6 +40,11 @@ export default function Home() {
         <div className="pt-2">
           <WeatherView />
         </div>
+        
+        <AnimatePresence>
+          {isWeatherOpen && <Weather />}
+        </AnimatePresence>
+
         <Taskbar />
       </main>
     </div>
