@@ -3,15 +3,38 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Search, CloudRain, Sidebar } from "lucide-react";
 import { motion, useDragControls, AnimatePresence } from "motion/react";
 import { useWindowStore } from "../../../stores/useWindowStore";
+import Image from "next/image";
 
 const MIN_WIDTH = 450;
 const MIN_HEIGHT = 350;
-const DEFAULT_WIDTH = 800;
-const DEFAULT_HEIGHT = 500;
+const DEFAULT_WIDTH = 950;
+const DEFAULT_HEIGHT = 600;
 
 type ResizeDirection =
     | 'right' | 'bottom' | 'left' | 'top'
     | 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+const getBackgroundImage = (weatherData: any) => {
+    if (!weatherData || !weatherData.weather) return '/Weather/ClearSKy.png';
+    const main = weatherData.weather[0].main.toLowerCase();
+    const id = weatherData.weather[0].id;
+    const iconCode = weatherData.weather[0].icon;
+    
+    if (iconCode.endsWith('n') && (main === 'clear' || (main === 'clouds' && id === 801))) {
+        return '/Weather/Night sky.png';
+    }
+
+    if (main === 'clear') return '/Weather/ClearSKy.png';
+    if (main === 'clouds') {
+        if (id === 801 || id === 802) return '/Weather/Partly CLoudy.png';
+        return '/Weather/Cloudy.png';
+    }
+    if (main === 'rain' || main === 'drizzle' || main === 'snow') return '/Weather/Rainy.png';
+    if (main === 'thunderstorm') return '/Weather/Thunder.png';
+    if (main === 'mist' || main === 'fog' || main === 'haze' || main === 'smoke') return '/Weather/Fog.png';
+    if (weatherData.wind?.speed > 10) return '/Weather/Wind.png';
+    
+    return '/Weather/ClearSKy.png';
+};
 
 export const Weather = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -23,6 +46,9 @@ export const Weather = () => {
 
     const [isMaximized, setIsMaximized] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
+
+    const [weatherData, setWeatherData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [size, setSize] = useState({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT });
     const [position, setPosition] = useState({ x: 200, y: 150 });
@@ -46,6 +72,26 @@ export const Weather = () => {
             isFirstRender.current = false;
         }
     }, []);
+
+    const fetchWeather = useCallback(async (city?: string) => {
+        setIsLoading(true);
+        try {
+            const url = city ? `/api/weather?city=${encodeURIComponent(city)}` : '/api/weather';
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.cod === 200 || data.weather) {
+                setWeatherData(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch weather:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchWeather();
+    }, [fetchWeather]);
 
     const handleMaximizeWindow = useCallback(() => {
         if (isMaximized) {
@@ -171,8 +217,20 @@ export const Weather = () => {
                         overflow: 'hidden',
                         userSelect: 'none',
                     }}
-                    className="bg-slate-900 text-white backdrop-blur-2xl border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)] flex"
+                    className="bg-slate-900 text-white backdrop-blur-3xl shadow-[0_32px_80px_rgba(0,0,0,0.6)] flex relative"
                 >
+                    {weatherData && (
+                        <div className="absolute inset-0 z-0 pointer-events-none">
+                            <Image 
+                                src={getBackgroundImage(weatherData)} 
+                                alt="Weather Background" 
+                                fill
+                                className="object-cover mix-blend-screen opacity-90"
+                                priority
+                            />
+                            <div className="absolute inset-0 bg-slate-900/40 mix-blend-overlay"></div>
+                        </div>
+                    )}
                     {/* ── Resize handles ──────────────────────────────────────────────── */}
                     {!isMaximized && (
                         <>
@@ -188,8 +246,8 @@ export const Weather = () => {
                     )}
 
                     {isSidebarOpen && (
-                        <div className="w-64 h-full bg-slate-800 border-r border-slate-700/50 bg-black/50 shrink-0 flex flex-col">
-                            <div 
+                        <div className="relative z-10 w-64 h-full bg-black/40 border-r border-white/10 shrink-0 flex flex-col backdrop-blur-md">
+                            <div
                                 className="flex items-center justify-between p-4"
                                 onPointerDown={e => {
                                     if (isMaximized) return;
@@ -238,11 +296,16 @@ export const Weather = () => {
                             <div className="px-4 mt-2">
                                 <div className="relative z-50 cursor-text">
                                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50" />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search location" 
-                                        value={searchQuery} 
-                                        onChange={(e) => setSearchQuery(e.target.value)} 
+                                    <input
+                                        type="text"
+                                        placeholder="Search location"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && searchQuery.trim()) {
+                                                fetchWeather(searchQuery.trim());
+                                            }
+                                        }}
                                         className="w-full bg-white/10 border border-white/5 rounded-md py-1.5 pl-9 pr-3 text-sm outline-none focus:bg-white/20 transition-colors placeholder:text-white/40"
                                     />
                                 </div>
@@ -250,8 +313,8 @@ export const Weather = () => {
                         </div>
                     )}
 
-                    <div className="flex-1 flex flex-col relative w-full h-full bg-gradient-to-br from-slate-900 to-slate-800">
-                        <div 
+                    <div className="relative z-10 flex-1 flex flex-col w-full h-full bg-gradient-to-br from-black/20 to-black/60 shadow-inner">
+                        <div
                             className="absolute top-0 left-0 w-full h-12 flex items-center px-4"
                             onPointerDown={e => {
                                 if (isMaximized) return;
@@ -283,10 +346,21 @@ export const Weather = () => {
                         </div>
 
                         <div className="flex-1 flex flex-col items-center justify-center p-8">
-                            <CloudRain size={72} className="text-blue-400 mb-6 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
-                            <h2 className="text-4xl font-light mb-2 tracking-wide">San Francisco</h2>
-                            <p className="text-7xl font-bold mb-4 tracking-tighter">18°</p>
-                            <p className="text-lg text-blue-200/80">Mostly clear • H: 21° L: 13°</p>
+                            {isLoading || !weatherData ? (
+                                <div className="animate-pulse flex flex-col items-center">
+                                    <div className="w-16 h-16 bg-white/20 rounded-full mb-6"></div>
+                                    <div className="h-8 bg-white/20 w-48 rounded mb-4"></div>
+                                    <div className="h-16 bg-white/20 w-32 rounded mb-4"></div>
+                                    <div className="h-4 bg-white/20 w-40 rounded"></div>
+                                </div>
+                            ) : (
+                                <>
+                                    <CloudRain size={72} className="text-blue-400 mb-6 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
+                                    <h2 className="text-4xl font-light mb-2 tracking-wide">{weatherData.name || 'Unknown'}</h2>
+                                    <p className="text-7xl font-bold mb-4 tracking-tighter">{Math.round(weatherData.main?.temp || 0)}°</p>
+                                    <p className="text-lg text-blue-200/80 capitalize">{weatherData.weather?.[0]?.description || 'Clear'} • H: {Math.round(weatherData.main?.temp_max || 0)}° L: {Math.round(weatherData.main?.temp_min || 0)}°</p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </motion.div>
