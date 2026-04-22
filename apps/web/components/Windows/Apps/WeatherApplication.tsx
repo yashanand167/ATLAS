@@ -18,7 +18,7 @@ const getBackgroundImage = (weatherData: any) => {
     const main = weatherData.weather[0].main.toLowerCase();
     const id = weatherData.weather[0].id;
     const iconCode = weatherData.weather[0].icon;
-    
+
     if (iconCode.endsWith('n') && (main === 'clear' || (main === 'clouds' && id === 801))) {
         return '/Weather/Night sky.png';
     }
@@ -32,7 +32,7 @@ const getBackgroundImage = (weatherData: any) => {
     if (main === 'thunderstorm') return '/Weather/Thunder.png';
     if (main === 'mist' || main === 'fog' || main === 'haze' || main === 'smoke') return '/Weather/Fog.png';
     if (weatherData.wind?.speed > 10) return '/Weather/Wind.png';
-    
+
     return '/Weather/ClearSKy.png';
 };
 
@@ -184,7 +184,7 @@ export const Weather = () => {
         handleMaximizeWindow();
     }, [handleMaximizeWindow]);
 
-    const borderRadius = isMaximized ? '0' : '1rem';
+    const borderRadius = isMaximized ? '0' : '1.5rem';
 
     return (
         <AnimatePresence>
@@ -221,9 +221,9 @@ export const Weather = () => {
                 >
                     {weatherData && (
                         <div className="absolute inset-0 z-0 pointer-events-none">
-                            <Image 
-                                src={getBackgroundImage(weatherData)} 
-                                alt="Weather Background" 
+                            <Image
+                                src={getBackgroundImage(weatherData)}
+                                alt="Weather Background"
                                 fill
                                 className="object-cover mix-blend-screen opacity-90"
                                 priority
@@ -246,7 +246,7 @@ export const Weather = () => {
                     )}
 
                     {isSidebarOpen && (
-                        <div className="relative z-10 w-64 h-full bg-black/40 border-r border-white/10 shrink-0 flex flex-col backdrop-blur-md">
+                        <div className="relative z-10 w-64 h-full bg-black/60 border-r border-white/10 shrink-0 flex flex-col backdrop-blur-md">
                             <div
                                 className="flex items-center justify-between p-4"
                                 onPointerDown={e => {
@@ -355,9 +355,8 @@ export const Weather = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <CloudRain size={72} className="text-blue-400 mb-6 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]" />
                                     <h2 className="text-4xl font-light mb-2 tracking-wide">{weatherData.name || 'Unknown'}</h2>
-                                    <p className="text-7xl font-bold mb-4 tracking-tighter">{Math.round(weatherData.main?.temp || 0)}°</p>
+                                    <p className="text-6xl font-medium mb-4 tracking-tighter">{Math.round(weatherData.main?.temp || 0)}°</p>
                                     <p className="text-lg text-blue-200/80 capitalize">{weatherData.weather?.[0]?.description || 'Clear'} • H: {Math.round(weatherData.main?.temp_max || 0)}° L: {Math.round(weatherData.main?.temp_min || 0)}°</p>
                                 </>
                             )}
